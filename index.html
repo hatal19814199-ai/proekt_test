@@ -1,128 +1,956 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Генератор идей для постов</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after {
+    * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     :root {
-      --ink: #1c1917;
-      --ink-soft: #57534e;
-      --surface: rgba(255, 255, 255, 0.92);
-      --row: rgba(255, 255, 255, 0.65);
-      --row-hover: rgba(255, 255, 255, 0.95);
-      --border: rgba(120, 113, 108, 0.12);
-      --shadow-card: 0 4px 6px -1px rgba(41, 37, 36, 0.06),
-        0 24px 48px -12px rgba(41, 37, 36, 0.12);
-      --shadow-row: 0 1px 2px rgba(41, 37, 36, 0.04);
-      --shadow-row-hover: 0 8px 24px -6px rgba(41, 37, 36, 0.1);
+      --bg-1: #0a0f1f;
+      --bg-2: #10182d;
+      --bg-3: #161d38;
+      --bg-4: #1a1330;
+      --text: #f8fafc;
+      --muted: #a5b4d4;
+      --line: rgba(255, 255, 255, 0.08);
+      --card: rgba(14, 20, 38, 0.74);
+      --card-solid: rgba(18, 25, 46, 0.94);
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+      --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.28);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --accent: #8b5cf6;
+      --accent-2: #ec4899;
+      --accent-3: #38bdf8;
+      --success: #22c55e;
     }
 
     body {
-      margin: 0;
-      min-height: 100dvh;
-      font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-      font-weight: 500;
-      color: var(--ink);
-      line-height: 1.55;
-      -webkit-font-smoothing: antialiased;
-      background: linear-gradient(
-        145deg,
-        #faf8f5 0%,
-        #f0f4f8 42%,
-        #e8eef6 72%,
-        #f5f2ef 100%
-      );
-      background-attachment: fixed;
-    }
-
-    .page {
-      min-height: 100dvh;
+      min-height: 100vh;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.22), transparent 24%),
+        radial-gradient(circle at 90% 10%, rgba(236, 72, 153, 0.18), transparent 22%),
+        radial-gradient(circle at 50% 100%, rgba(56, 189, 248, 0.16), transparent 28%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4));
+      padding: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: clamp(1.25rem, 4vw, 2.5rem);
+      overflow-x: hidden;
     }
 
-    .card {
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: 0;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .orb-1 {
+      width: 320px;
+      height: 320px;
+      background: #8b5cf6;
+      top: -80px;
+      left: -60px;
+    }
+
+    .orb-2 {
+      width: 300px;
+      height: 300px;
+      background: #38bdf8;
+      right: -80px;
+      bottom: -80px;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
       width: 100%;
-      max-width: 28rem;
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: clamp(1.25rem, 3vw, 1.75rem);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-card);
-      padding: clamp(1.75rem, 5vw, 2.5rem) clamp(1.5rem, 4vw, 2.25rem);
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 22px;
     }
 
-    .card h1 {
-      margin: 0 0 clamp(1.5rem, 4vw, 2rem);
-      font-size: clamp(1.625rem, 5.2vw, 2.125rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.2;
-      color: var(--ink);
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
     }
 
-    .list {
+    .hero {
+      padding: 42px 38px;
+    }
+
+    h1 {
+      font-size: clamp(36px, 5vw, 58px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+      margin-bottom: 18px;
+      max-width: 620px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 620px;
+      margin-bottom: 30px;
+    }
+
+    .ideas-list {
       list-style: none;
-      margin: 0;
-      padding: 0;
+      display: grid;
+      gap: 14px;
+    }
+
+    .ideas-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      transition:
+        transform 0.22s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .ideas-list li::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.12),
+        rgba(236, 72, 153, 0.08),
+        rgba(56, 189, 248, 0.08)
+      );
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .ideas-list li:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(139, 92, 246, 0.32);
+      box-shadow:
+        0 0 0 1px rgba(139, 92, 246, 0.12),
+        0 0 20px rgba(139, 92, 246, 0.14),
+        0 0 38px rgba(56, 189, 248, 0.08),
+        0 18px 40px rgba(0, 0, 0, 0.32);
+    }
+
+    .ideas-list li:hover::before {
+      opacity: 1;
+    }
+
+    .idea-left,
+    .arrow {
+      position: relative;
+      z-index: 1;
+    }
+
+    .idea-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.18),
+        rgba(236, 72, 153, 0.16),
+        rgba(56, 189, 248, 0.16)
+      );
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 18px rgba(139, 92, 246, 0.10);
+    }
+
+    .idea-text {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .arrow {
+      color: #94a3b8;
+      font-size: 22px;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .ideas-list li:hover .arrow {
+      transform: translateX(4px);
+      color: #c4b5fd;
+    }
+
+    .generator {
+      padding: 28px;
       display: flex;
       flex-direction: column;
-      gap: clamp(0.625rem, 2vw, 0.875rem);
+      gap: 18px;
     }
 
-    .list li {
-      margin: 0;
-      padding: clamp(0.875rem, 2.5vw, 1.125rem) clamp(1rem, 3vw, 1.25rem);
-      background: var(--row);
-      border: 1px solid var(--border);
-      border-radius: clamp(0.75rem, 2vw, 1rem);
-      box-shadow: var(--shadow-row);
-      font-size: clamp(0.9375rem, 2.8vw, 1rem);
+    .card-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-label {
+      font-size: 14px;
+      color: var(--muted);
       font-weight: 600;
-      color: var(--ink-soft);
-      transition: transform 0.22s ease, box-shadow 0.22s ease,
-        background 0.22s ease, color 0.22s ease, border-color 0.22s ease;
     }
 
-    .list li:hover {
+    .input,
+    .textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 15px;
+      outline: none;
+      box-shadow: var(--shadow-soft);
+      font-family: inherit;
+    }
+
+    .input::placeholder,
+    .textarea::placeholder {
+      color: #8fa0c7;
+    }
+
+    .input:focus,
+    .textarea:focus {
+      border-color: rgba(139, 92, 246, 0.42);
+      box-shadow:
+        0 0 0 1px rgba(139, 92, 246, 0.18),
+        0 0 22px rgba(139, 92, 246, 0.20),
+        var(--shadow-soft);
+    }
+
+    .textarea {
+      min-height: 320px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      position: relative;
+    }
+
+    .option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .option label {
+      display: block;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      transition:
+        transform 0.22s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option label::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.14),
+        rgba(236, 72, 153, 0.10),
+        rgba(56, 189, 248, 0.10)
+      );
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .option label:hover {
       transform: translateY(-2px);
-      background: var(--row-hover);
-      color: var(--ink);
-      border-color: rgba(120, 113, 108, 0.18);
-      box-shadow: var(--shadow-row-hover);
+      border-color: rgba(139, 92, 246, 0.24);
+      box-shadow:
+        0 0 0 1px rgba(139, 92, 246, 0.12),
+        0 0 18px rgba(139, 92, 246, 0.14),
+        0 0 34px rgba(56, 189, 248, 0.08),
+        var(--shadow-soft);
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .list li {
-        transition: none;
+    .option label:hover::before {
+      opacity: 1;
+    }
+
+    .option input:checked + label {
+      border-color: rgba(139, 92, 246, 0.42);
+      background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.18),
+        rgba(236, 72, 153, 0.12),
+        rgba(56, 189, 248, 0.12)
+      );
+      color: #ddd6fe;
+      box-shadow:
+        0 0 0 1px rgba(139, 92, 246, 0.18),
+        0 0 22px rgba(139, 92, 246, 0.24),
+        0 0 42px rgba(236, 72, 153, 0.10),
+        var(--shadow-soft);
+    }
+
+    .option input:checked + label::before {
+      opacity: 1;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      border: none;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 10px 24px rgba(139, 92, 246, 0.30),
+        0 0 28px rgba(139, 92, 246, 0.28),
+        0 0 48px rgba(236, 72, 153, 0.12);
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.25s ease,
+        filter 0.25s ease,
+        opacity 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      font-family: inherit;
+    }
+
+    .button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 120%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.22),
+        transparent
+      );
+      transition: left 0.6s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px) scale(1.01);
+      filter: brightness(1.05);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.10),
+        0 16px 32px rgba(139, 92, 246, 0.36),
+        0 0 32px rgba(139, 92, 246, 0.42),
+        0 0 64px rgba(236, 72, 153, 0.20);
+    }
+
+    .button:hover::before {
+      left: 120%;
+    }
+
+    .button-secondary {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba(139, 92, 246, 0.95));
+    }
+
+    .button-success {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 10px 24px rgba(34, 197, 94, 0.24),
+        0 0 28px rgba(34, 197, 94, 0.20);
+    }
+
+    .button-small {
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .result,
+    .post-output {
+      background: var(--card-solid);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .result {
+      min-height: 240px;
+    }
+
+    .result-head,
+    .post-head {
+      margin-bottom: 14px;
+    }
+
+    .result-title,
+    .post-title {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .result-placeholder {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .generated-list {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .generated-list li {
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      line-height: 1.5;
+      font-size: 15px;
+      color: #e5e7eb;
+    }
+
+    .generated-list strong {
+      display: block;
+      font-size: 13px;
+      color: #c4b5fd;
+      margin-bottom: 4px;
+    }
+
+    .copy-status {
+      font-size: 13px;
+      color: #86efac;
+      min-height: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
       }
-      .list li:hover {
-        transform: none;
+
+      .hero,
+      .generator {
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+      }
+
+      .idea-text {
+        font-size: 15px;
+      }
+
+      .ideas-list li {
+        align-items: flex-start;
+      }
+
+      .icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        font-size: 18px;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+
+      .button,
+      .button-small {
+        width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <main class="card">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="app">
+    <section class="panel hero">
       <h1>Генератор идей для постов</h1>
-      <ul class="list">
-        <li>5 идей постов для экспертов</li>
-        <li>3 идеи сторис на сегодня</li>
-        <li>контент план на неделю</li>
+      <p class="subtitle">
+        Подбор контент-идей: посты, сторис и недельный план — в одном месте.
+      </p>
+
+      <ul class="ideas-list">
+        <li data-mode="posts">
+          <div class="idea-left">
+            <div class="icon">💡</div>
+            <div class="idea-text">Идеи для постов</div>
+          </div>
+          <div class="arrow">→</div>
+        </li>
+
+        <li data-mode="stories">
+          <div class="idea-left">
+            <div class="icon">📲</div>
+            <div class="idea-text">Идеи для сторис</div>
+          </div>
+          <div class="arrow">→</div>
+        </li>
+
+        <li data-mode="plan">
+          <div class="idea-left">
+            <div class="icon">🗓️</div>
+            <div class="idea-text">Контент-план</div>
+          </div>
+          <div class="arrow">→</div>
+        </li>
       </ul>
-    </main>
+    </section>
+
+    <aside class="panel generator">
+      <div class="card-title">Что сгенерировать</div>
+
+      <div class="field">
+        <label class="field-label" for="audienceInput">Для кого сделать контент</label>
+        <input
+          id="audienceInput"
+          class="input"
+          type="text"
+          placeholder="Например: психолог, стоматолог, таргетолог, фотограф"
+        />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="nicheInput">Тема / ниша</label>
+        <input
+          id="nicheInput"
+          class="input"
+          type="text"
+          placeholder="Например: продвижение в соцсетях, уход за кожей, дизайн сайтов"
+        />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="topicInput">Ключевая тема</label>
+        <input
+          id="topicInput"
+          class="input"
+          type="text"
+          placeholder="Например: как привлечь клиентов, как выбрать специалиста"
+        />
+      </div>
+
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="posts" name="mode" value="posts" checked />
+          <label for="posts">Пост</label>
+        </div>
+
+        <div class="option">
+          <input type="radio" id="stories" name="mode" value="stories" />
+          <label for="stories">Сторис</label>
+        </div>
+
+        <div class="option">
+          <input type="radio" id="plan" name="mode" value="plan" />
+          <label for="plan">Контент-план</label>
+        </div>
+      </div>
+
+      <button class="button" id="generateBtn">Сгенерировать идеи</button>
+
+      <div class="result" id="result">
+        <div class="result-head">
+          <div class="result-title">Результат</div>
+        </div>
+        <div class="result-placeholder">
+          Впиши, для кого нужен контент, тему/нишу и ключевую тему. Потом нажми на кнопку.
+        </div>
+      </div>
+
+      <div class="post-output">
+        <div class="post-head">
+          <div class="post-title">Готовый пост</div>
+        </div>
+
+        <textarea
+          id="postTextarea"
+          class="textarea"
+          placeholder="Нажми «Создать пост» под любой идеей, и здесь появится полный готовый текст."
+        ></textarea>
+
+        <div class="button-row">
+          <button class="button button-secondary" id="copyBtn">Скопировать текст</button>
+          <button class="button button-secondary" id="copyIdeasBtn">Скопировать все идеи</button>
+          <button class="button button-success" id="clearBtn">Очистить</button>
+        </div>
+
+        <div class="copy-status" id="copyStatus"></div>
+      </div>
+    </aside>
   </div>
+
+  <script>
+    const result = document.getElementById("result");
+    const generateBtn = document.getElementById("generateBtn");
+    const ideaCards = document.querySelectorAll(".ideas-list li");
+    const audienceInput = document.getElementById("audienceInput");
+    const nicheInput = document.getElementById("nicheInput");
+    const topicInput = document.getElementById("topicInput");
+    const postTextarea = document.getElementById("postTextarea");
+    const copyBtn = document.getElementById("copyBtn");
+    const copyIdeasBtn = document.getElementById("copyIdeasBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const copyStatus = document.getElementById("copyStatus");
+
+    let lastGeneratedIdeasText = "";
+    let currentIdeas = [];
+
+    function getAudienceTitle() {
+      const value = audienceInput.value.trim();
+      return value || "специалиста";
+    }
+
+    function getNicheText() {
+      const value = nicheInput.value.trim();
+      return value || "вашей теме";
+    }
+
+    function getTopicText() {
+      const value = topicInput.value.trim();
+      return value || "актуальной теме";
+    }
+
+    function capitalizeFirst(text) {
+      if (!text) return text;
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function generatePostIdeas(audience, niche, mainTopic) {
+      return [
+        `Почему тема «${mainTopic}» особенно важна для ${audience} в нише ${niche}`,
+        `5 ошибок в теме «${mainTopic}», которые мешают получить результат`,
+        `Что чаще всего не понимают клиенты про «${mainTopic}»`,
+        `Пошаговый разбор: как подойти к теме «${mainTopic}» без хаоса`,
+        `Как через тему «${mainTopic}» показать экспертность и вызвать доверие`
+      ];
+    }
+
+    function generateStoriesIdeas(audience, niche, mainTopic) {
+      return [
+        `Сделайте сторис-опрос: что аудитории сложнее всего в теме «${mainTopic}»`,
+        `Покажите 1 быстрый совет для ${audience} по теме «${mainTopic}»`,
+        `Расскажите короткую историю или кейс из ниши ${niche} по теме «${mainTopic}»`
+      ];
+    }
+
+    function generatePlanIdeas(audience, niche, mainTopic) {
+      return [
+        `Понедельник — пост: почему тема «${mainTopic}» важна для вашей аудитории`,
+        `Среда — сторис: частые ошибки в теме «${mainTopic}»`,
+        `Пятница — пост/кейс: как решить задачу в нише ${niche} через правильный подход`
+      ];
+    }
+
+    function buildIdeas(mode, audience, niche, mainTopic) {
+      if (mode === "stories") {
+        return generateStoriesIdeas(audience, niche, mainTopic);
+      }
+
+      if (mode === "plan") {
+        return generatePlanIdeas(audience, niche, mainTopic);
+      }
+
+      return generatePostIdeas(audience, niche, mainTopic);
+    }
+
+    function buildLongPost(mode, idea, audience, niche, mainTopic) {
+      const intro = `Если вы работаете как ${audience} в нише ${niche}, тема «${mainTopic}» почти всегда так или иначе касается ваших клиентов.`;
+      const pain = `Очень часто люди приходят уже в тот момент, когда проблема накопилась, а до этого долго откладывают решение, сомневаются или пытаются разобраться самостоятельно.`;
+      const value = `Именно поэтому контент на эту тему помогает не просто что-то рассказать, а показать вашу компетентность, объяснить сложное простыми словами и вызвать доверие ещё до личного контакта.`;
+
+      if (mode === "stories") {
+        return `Тема для сторис: ${idea}
+
+${intro}
+
+Сегодня можно раскрыть эту тему просто и без перегруза.
+
+Что сказать:
+1. Коротко обозначьте проблему или ситуацию.
+2. Покажите, почему это важно именно сейчас.
+3. Дайте один понятный совет или наблюдение.
+4. Завершите вопросом к аудитории.
+
+Пример текста:
+«Многие сталкиваются с темой "${mainTopic}", но не всегда понимают, с чего начать. На самом деле первый шаг — не пытаться решить всё сразу, а увидеть главную причину. Часто уже одно это помогает двигаться спокойнее и увереннее. У вас тоже так бывает?»
+
+Такую сторис можно разбить на 3–4 экрана и сохранить в актуальное.`;
+      }
+
+      if (mode === "plan") {
+        return `Тема: ${idea}
+
+${intro}
+${pain}
+
+Вот как можно раскрыть этот пункт контент-плана в готовый пост:
+
+Сначала покажите знакомую для аудитории ситуацию. Затем объясните, почему тема "${mainTopic}" важна и какие ошибки чаще всего мешают получить результат. После этого дайте 2–3 практические мысли, которые человек может применить уже сейчас. В финале добавьте вопрос или приглашение к диалогу.
+
+Пример финального абзаца:
+«Когда тема становится понятной и перестаёт пугать своей сложностью, человек быстрее приходит к результату. Главное — не пытаться охватить всё сразу, а двигаться последовательно. А как у вас обычно происходит в этой теме?»`;
+      }
+
+      return `Тема поста: ${idea}
+
+${intro}
+${pain}
+${value}
+
+Когда человек сталкивается с темой «${mainTopic}», он чаще всего ищет не просто информацию, а понятное объяснение и ощущение, что его проблему действительно понимают. Именно поэтому такой пост может хорошо сработать и на вовлечение, и на доверие.
+
+Что важно донести в тексте:
+— почему эта тема актуальна;
+— в чём главная ошибка большинства;
+— что можно сделать уже сейчас;
+— к какому результату это приводит.
+
+Готовый текст поста:
+
+«${capitalizeFirst(mainTopic)} — это тема, которая кажется простой только на первый взгляд. На практике многие делают одни и те же ошибки, из-за которых не получают нужный результат или вообще теряют мотивацию продолжать.
+
+Если посмотреть глубже, проблема обычно не в отсутствии желания, а в том, что человеку не хватает ясной системы и понятной точки входа. Он читает много информации, пробует разные подходы, но не видит целостной картины.
+
+Хорошая новость в том, что здесь не нужен идеальный старт. Достаточно сначала понять, что именно мешает результату, а потом шаг за шагом выстроить более понятный и спокойный путь. Именно в этом и заключается сильный подход: не усложнять, а убирать лишнее и делать действия осознанно.
+
+Если вы давно откладывали решение этого вопроса, начните с самого простого шага уже сегодня. Иногда именно он становится началом больших изменений».
+
+В конце можно добавить вопрос:
+«А что для вас сейчас самое сложное в теме "${mainTopic}"?»`;
+    }
+
+    function buildIdeasText(items, mode, title, audience, niche, mainTopic) {
+      const modeNames = {
+        posts: "Идеи для постов",
+        stories: "Идеи для сторис",
+        plan: "Контент-план"
+      };
+
+      const lines = [
+        title,
+        `Формат: ${modeNames[mode] || mode}`,
+        `Для кого: ${audience}`,
+        `Ниша: ${niche}`,
+        `Ключевая тема: ${mainTopic}`,
+        ""
+      ];
+
+      items.forEach((item, index) => {
+        lines.push(`${index + 1}. ${item}`);
+      });
+
+      return lines.join("\n");
+    }
+
+    function renderList(items, mode, audience, niche, mainTopic) {
+      const titleMap = {
+        posts: `Идеи для постов для: ${audience}`,
+        stories: `Идеи для сторис для: ${audience}`,
+        plan: `Контент-план для: ${audience}`
+      };
+
+      const title = `${titleMap[mode]} — ниша: ${niche}`;
+      lastGeneratedIdeasText = buildIdeasText(items, mode, title, audience, niche, mainTopic);
+      currentIdeas = items;
+
+      const list = items.map((text, index) => {
+        const safeTopic = text.replace(/"/g, "&quot;");
+        return `
+          <li>
+            <strong>Тема ${index + 1}</strong>
+            ${text}
+            <button class="button button-small create-post-btn" data-topic="${safeTopic}" data-mode="${mode}">
+              Создать пост
+            </button>
+          </li>
+        `;
+      }).join("");
+
+      result.innerHTML = `
+        <div class="result-head">
+          <div class="result-title">${title}</div>
+        </div>
+        <ul class="generated-list">${list}</ul>
+      `;
+
+      attachCreatePostHandlers();
+    }
+
+    function attachCreatePostHandlers() {
+      const buttons = document.querySelectorAll(".create-post-btn");
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const topic = button.getAttribute("data-topic");
+          const mode = button.getAttribute("data-mode");
+          const audience = getAudienceTitle();
+          const niche = getNicheText();
+          const mainTopic = getTopicText();
+
+          const postText = buildLongPost(mode, topic, audience, niche, mainTopic);
+          postTextarea.value = postText;
+          copyStatus.textContent = "";
+          postTextarea.focus();
+        });
+      });
+    }
+
+    function generateContent() {
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const audience = getAudienceTitle();
+      const niche = getNicheText();
+      const mainTopic = getTopicText();
+
+      const items = buildIdeas(mode, audience, niche, mainTopic);
+      renderList(items, mode, audience, niche, mainTopic);
+      copyStatus.textContent = "";
+    }
+
+    async function copyTextValue(text, successMessage) {
+      try {
+        await navigator.clipboard.writeText(text);
+        copyStatus.textContent = successMessage;
+      } catch (error) {
+        const helper = document.createElement("textarea");
+        helper.value = text;
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand("copy");
+        document.body.removeChild(helper);
+        copyStatus.textContent = successMessage;
+      }
+    }
+
+    async function copyText() {
+      const text = postTextarea.value.trim();
+
+      if (!text) {
+        copyStatus.textContent = "Сначала создай или введи текст.";
+        return;
+      }
+
+      await copyTextValue(text, "Текст скопирован.");
+    }
+
+    async function copyIdeas() {
+      if (!lastGeneratedIdeasText.trim()) {
+        copyStatus.textContent = "Сначала сгенерируй идеи.";
+        return;
+      }
+
+      await copyTextValue(lastGeneratedIdeasText, "Все идеи скопированы.");
+    }
+
+    function clearText() {
+      postTextarea.value = "";
+      copyStatus.textContent = "";
+      postTextarea.focus();
+    }
+
+    generateBtn.addEventListener("click", generateContent);
+    copyBtn.addEventListener("click", copyText);
+    copyIdeasBtn.addEventListener("click", copyIdeas);
+    clearBtn.addEventListener("click", clearText);
+
+    ideaCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        const mode = card.dataset.mode;
+        const radio = document.getElementById(mode);
+        if (radio) radio.checked = true;
+      });
+    });
+  </script>
 </body>
 </html>
